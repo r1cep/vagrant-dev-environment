@@ -1,0 +1,46 @@
+---
+- name: Check if Vim is installed.
+  stat:
+    path: /usr/local/bin/vim
+  register: vim
+  roles: vim
+
+- block:
+    - name: Install required packages for Vim.
+      yum: name={{ packages }} state=latest
+      vars:
+        packages:
+          - lua-devel
+          - python-devel
+          - ruby-devel
+          - ncurses-devel
+          - gcc
+
+    - name: Clone Vim.
+      git:
+        repo: git://github.com/vim/vim.git
+        dest: /tmp/vim
+        version: "{{ vim_version }}"
+
+    - name: Install Vim.
+      shell: "{{ item }}"
+      args:
+        chdir: /tmp/vim/src
+      with_items:
+        - ./configure
+          --with-features=huge
+          --enable-multibyte
+          --enable-luainterp=dynamic
+          --enable-gpm
+          --enable-cscope
+          --enable-fontset
+          --enable-fail-if-missing
+          --prefix=/usr/local
+          --enable-pythoninterp=dynamic
+          --enable-rubyinterp=dynamic
+        - make
+        - make install
+
+  when: not vim.stat.exists
+  roles: vim
+

@@ -1,0 +1,10 @@
+---
+- include: firewalld.yml
+- include: selinux.yml
+- include: update.yml
+- include: timezone.yml
+- include: locale.yml
+- include: repo.yml
+- include: package.yml
+#- include: ssh.yml
+- include: hostname.yml

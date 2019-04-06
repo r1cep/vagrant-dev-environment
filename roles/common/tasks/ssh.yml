@@ -1,0 +1,11 @@
+---
+- name: Enable sshd password authentication.
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    backrefs: yes
+    regexp: '^(PasswordAuthentication) no$'
+    line: '\1 yes'
+  notify:
+    - Restart sshd.
+  tags: ssh

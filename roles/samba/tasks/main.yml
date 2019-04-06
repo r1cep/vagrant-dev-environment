@@ -1,0 +1,31 @@
+---
+- name: Install samba.
+  yum:
+    name:
+      - samba
+  tags: samba
+
+- name: Configure setting.
+  template:
+    src: '../templates/smb.conf.j2'
+    dest: '/etc/samba/smb.conf'
+    validate: 'testparm -s %s'
+    backup: yes
+  tags: samba
+
+- name: Start samba.
+  service:
+    name: smb
+    state: started
+    enabled: yes
+  tags: samba
+
+- name: Create samba user.
+  shell: >
+    (pdbedit --user={{ samba_user }} 2>&1 > /dev/null) \
+    || (echo {{ samba_password }}; echo {{ samba_password }}) \
+    | pdbedit -t -a {{ samba_user }}
+  no_log: true
+  register: create_user_output
+  changed_when: "'Added user' in create_user_output.stdout"
+  tags: samba

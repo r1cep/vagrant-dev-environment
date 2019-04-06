@@ -1,0 +1,5 @@
+---
+- name: Change hostname.
+  hostname:
+    name: "{{ hostname }}"
+  tags: hostname

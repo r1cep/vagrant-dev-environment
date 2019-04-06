@@ -1,0 +1,19 @@
+---
+- name: Check locale.
+  shell: locale -a | grep ja
+  register: is_exists_jp
+  failed_when: false
+  changed_when: false
+  tags: locale
+
+- name: Install glib-common to make locale Japanese.
+  command: yum -y reinstall glibc-common
+  when: is_exists_jp.stdout == ''
+  args:
+    warn: no
+  tags: locale
+
+- name: Set locale to Japanese.
+  command: localectl set-locale LANG=ja_JP.UTF-8
+  when: ansible_env.LANG != 'ja_JP.UTF-8'
+  tags: locale

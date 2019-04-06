@@ -1,0 +1,12 @@
+---
+#- name: Install Python module for SELinux.
+#  yum:
+#    name: libselinux-python
+#    state: installed
+
+- name: Set SELinux to Permissive mode.
+  selinux:
+    policy: targeted
+    state: permissive
+  notify: Reboot.
+  tags: selinux

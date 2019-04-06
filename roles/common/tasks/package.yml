@@ -1,0 +1,8 @@
+---
+- name: Install various utility packages.
+  yum:
+    name:
+      - tree
+      - colordiff
+      - jq
+  tags: package

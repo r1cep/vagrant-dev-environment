@@ -1,0 +1,60 @@
+---
+- name: Install the required packages in the docker repository.
+  yum:
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+  tags: docker
+
+- name: Check docker repository.
+  stat:
+    path: /etc/yum.repos.d/docker-ce.repo
+  register: docker
+  tags: docker
+
+- name: Set up docker-ce repository.
+  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  when: docker.stat.exists == false
+
+- name: Install docker.
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+  tags: docker
+
+- name: Add user to docker group.
+  user:
+    name: vagrant
+    groups: docker
+    append: yes
+  tags: docker
+
+- name: Install docker-compose.
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_machine }}"
+    dest: /usr/local/bin/docker-compose
+  register: docker_compose
+  tags: docker
+
+- name: Set execute permission to docker-compose binary.
+  file:
+    path: /usr/local/bin/docker-compose
+    mode: "a+x"
+  when: docker_compose.changed
+  tags: docker
+
+- name: Install docker-compose bash-completion.
+  get_url:
+    url: "https://raw.githubusercontent.com/docker/compose/master/contrib/completion/bash/docker-compose"
+    dest: /etc/bash_completion.d/docker-compose
+  tags: docker
+
+- name: Start docker.
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  tags: docker

@@ -1,0 +1,18 @@
+---
+
+- name: Configure settings for Docker host.
+  hosts: all
+  vars:
+    hostname: <HOSTNAME>
+    vim_version: <VIM_VERSION>
+    docker_compose_version: <DOCKER_COMPOSE_VERSION>
+    samba_user: <SAMBA_USER>
+    samba_password: <SAMBA_PASSWORD>
+  become: true
+  roles:
+    - common
+    - git
+    - vim
+    - docker
+    - samba
+
