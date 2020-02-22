@@ -3,7 +3,7 @@
   stat:
     path: /usr/local/bin/vim
   register: vim
-  roles: vim
+  tags: vim
 
 - block:
     - name: Install required packages for Vim.
@@ -42,5 +42,5 @@
         - make install
 
   when: not vim.stat.exists
-  roles: vim
+  tags: vim
 
